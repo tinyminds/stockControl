@@ -4,11 +4,6 @@ import { deleteItem } from "../actions";
 import { editStockitem } from "../actions";
 import { addStockitem } from "../actions";
 import { Inputs } from "./Inputs"
-const Thetype = (props) => {
-  return (
-    <span>{props.type}</span>
-  );
-};
 
 class StockItemsListItem extends Component {
   constructor () {
@@ -45,14 +40,14 @@ class StockItemsListItem extends Component {
     let description= !this.state.description?this.props.stockItem.description:this.state.description;
     let quantity= !this.state.quantity?this.props.stockItem.quantity:this.state.quantity;
     let isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive;  
-    editStockitem({ subtype: subtype=="nullState"?"":subtype,
-                    type: type=="nullState"?"":type, 
-                    price: price=="nullState"?"":price,
-                    material: material=="nullState"?"":material,
-                    submaterial: submaterial=="nullState"?"":submaterial,
-                    description: description=="nullState"?"":description,
-                    quantity: quantity=="nullState"?"":quantity,
-                    isstocklive: isstocklive=="nullState"?"":isstocklive  
+    editStockitem({ subtype: subtype==="nullState"?"":subtype,
+                    type: type==="nullState"?"":type, 
+                    price: price==="nullState"?"":price,
+                    material: material==="nullState"?"":material,
+                    submaterial: submaterial==="nullState"?"":submaterial,
+                    description: description==="nullState"?"":description,
+                    quantity: quantity==="nullState"?"":quantity,
+                    isstocklive: isstocklive==="nullState"?"":isstocklive  
                   }, auth.uid, this.props.stockItemId);
  };
  handleCopy = editItemId => {
@@ -142,8 +137,8 @@ class StockItemsListItem extends Component {
       onClick={() => this.handleEditClick(stockItemId)} >
       <i className="large material-icons">edit</i>
     </span>
-          {stockItem.subtype} <Thetype type={stockItem.type}/> {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
-          <br/>Price: £{stockItem.price} | Quanity: {stockItem.quantity} | Is in shop: { stockItem.isstocklive == 1 ? 'Yes' : 'No' }
+          {stockItem.subtype} {stockItem.type} {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
+          <br/>Price: £{stockItem.price} | Quanity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' }
           <br/>{stockItem.description? 'Description: ' : '' }{stockItem.description}
           <br/>
       </div>

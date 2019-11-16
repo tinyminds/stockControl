@@ -21,11 +21,16 @@ class StockItemsList extends Component {
   constructor () {
     super();
     this.state = {
-      ...initialState
+      ...initialState,
+      showLive:false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.handleFilterLive = this.handleFilterLive.bind(this);
   }
+  handleFilterLive() {
+    this.setState({showLive : this.state.showLive?false:true})
+  };
 
   handleChange (evt) {
     this.setState({ [evt.target.name]: evt.target.value });
@@ -104,10 +109,14 @@ class StockItemsList extends Component {
 
   renderStockItems() {
     const { data } = this.props;
-
-    //here is where i can reorder the list, make new const of map then sort then return
     const stockItems = _.map(data, (value, key) => {
-      return <StockItemsListItem key={key} stockItemId={key} stockItem={value} />;
+      if(this.state.showLive&&value.isstocklive==1){
+      return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
+      }
+      if(!this.state.showLive)
+      {
+        return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
+      }  
     });
     if (!_.isEmpty(stockItems)) {
       return stockItems;
@@ -131,7 +140,7 @@ class StockItemsList extends Component {
   }
 
   render() {
-    const { addFormVisible } = this.state;
+    const { addFormVisible, showLive } = this.state;
     if (this.props.data === "loading") {
       return (
         <div className="row center-align">
@@ -148,6 +157,17 @@ class StockItemsList extends Component {
           {this.renderStockItems()}
         </div>
         <div className="fixed-action-btn">
+         <button
+            onClick={this.handleFilterLive}
+            className="teal darken-4"
+          >
+          {showLive ? (
+            <i>Show all</i>
+          ) : (
+            <i>Filter by Live</i>
+          )}
+          </button>
+
           <button
             onClick={this.props.signOut}
             id="sign-out-button"
@@ -155,6 +175,7 @@ class StockItemsList extends Component {
           >
             <i className="large material-icons">exit_to_app</i>
           </button>
+      
           <button
             onClick={() => this.setState({ addFormVisible: !addFormVisible })}
             className="btn-floating btn-large teal darken-4"
