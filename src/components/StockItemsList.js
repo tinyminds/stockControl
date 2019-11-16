@@ -5,6 +5,7 @@ import _ from "lodash";
 import * as actions from "../actions";
 import StockItemsListItem from "./StockItemsListItem";
 import Preloader from "./Preloader";
+import { Inputs } from "./Inputs"
 const initialState = {
   addFormVisible: false,
   subtype: "",
@@ -14,7 +15,6 @@ const initialState = {
   submaterial: "",
   description: "",
   quantity: 1,
-  soldquantity: 0,
   isstocklive: 1
 }
 class StockItemsList extends Component {
@@ -41,7 +41,6 @@ class StockItemsList extends Component {
                     submaterial: this.state.submaterial,
                     description: this.state.description,
                     quantity: this.state.quantity,
-                    soldquantity: this.state.soldquantity,
                     isstocklive: this.state.isstocklive  
                   }, auth.uid);
     this.setState({ ...initialState, addFormVisible:true });
@@ -57,97 +56,44 @@ class StockItemsList extends Component {
       submaterial,
       description,
       quantity,
-      soldquantity,
       isstocklive 
     } = this.state;
     if (addFormVisible) {
       return (
         <div id="add-form" className="col s10 offset-s1">
           <form onSubmit={this.handleFormSubmit}>
-            <div className="input-field">
-              <input name="type"
-                value={type}
-                onChange={this.handleChange}
-                id="type"
-                type="text"
-              />
-              <label htmlFor="type">Type of item</label>
-              </div>
-    
-              <div className="input-field">
-              <input name="subtype"
-              value={subtype}
-              onChange={this.handleChange}
-              id="subtype"
-              type="text"
-            />
-            <label htmlFor="subtype">SubType of item</label>
-            </div>
-
-            <div className="input-field">
-              <input name="material"
-              value={material}
-              onChange={this.handleChange}
-              id="material"
-              type="text"
-            />
-            <label htmlFor="material">Material</label>
-            </div>
-
-            <div className="input-field">
-              <input name="submaterial"
-              value={submaterial}
-              onChange={this.handleChange}
-              id="submaterial"
-              type="text"
-            />
-            <label htmlFor="submaterial">SubType of material</label>
-            </div>
-
-            <div className="input-field">
-              <input name="description"
-              value={description}
-              onChange={this.handleChange}
-              id="description"
-              type="text"
-            />
-            <label htmlFor="description">Description</label>
-            </div>
-
-            <span className="input-field">Is stock in a shop?
-              <input name="isstocklive"
-              value={isstocklive}
-              onChange={this.handleChange}
-              type="number" min="0" max="1"
-            />
-            </span>
-
-            <span className="input-field">Quantity:
-              <input name="quantity"
-              value={quantity}
-              onChange={this.handleChange}
-              id="quantity"
-              type="number" min="0"
-            />
-            </span>
-
-            <span className="input-field">Sold Quantity:
-              <input name="soldquantity"
-              value={soldquantity}
-              onChange={this.handleChange}
-              id="soldquantity"
-              type="number"  min="0"
-            />
-            </span>
-
-            <span className="input-field">Price: £
-            <input name="price"
-            value={price}
-            onChange={this.handleChange}
-            id="price"
-            type="number" 
-            />
-            </span>
+          <Inputs name={"type"} type={"text"} label={"Type of item"} 
+          onChange={this.handleChange} 
+          value={type}
+          /> 
+          <Inputs name={"subtype"} type={"text"} label={"Subtype of item"} 
+          onChange={this.handleChange} 
+          value={subtype}
+          /> 
+          <Inputs name={"material"} type={"text"} label={"Material"} 
+          onChange={this.handleChange} 
+          value={material}
+          />
+          <Inputs name={"submaterial"} type={"text"} label={"Subtype of material"} 
+          onChange={this.handleChange} 
+          value={submaterial}
+          />
+          <Inputs name={"description"} type={"text"} label={"Description"}
+          onChange={this.handleChange} 
+          value={description}
+          />
+          <Inputs name={"isstocklive"} type={"number"} title={"Live?"} min={"0"} max={"1"}
+          onChange={this.handleChange} 
+          value={isstocklive}
+          />
+          <Inputs name={"quantity"} type={"number"} title={"Quantity"} min={"0"}
+          onChange={this.handleChange} 
+          value={quantity}
+          />
+          <Inputs name={"price"} type={"number"} title={"Price: £"} min={"0"}
+          onChange={this.handleChange} 
+          value={price}
+          />
             <br/>
             <button type="submit">Submit</button>
           </form>
@@ -196,7 +142,7 @@ class StockItemsList extends Component {
       );
     }
     return (
-      <div className="to-do-list-container">
+      <div className="list-container">
         <div className="row">
           {this.renderAddForm()}
           {this.renderStockItems()}

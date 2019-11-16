@@ -1,4 +1,4 @@
-.to-do-list-container {
+.list-container {
   margin-top: 25px;
 }
 
@@ -18,27 +18,28 @@ input[type="checkbox"] {
   pointer-events: all !important;
 }
 
-.to-do-list-item {
+.list-item {
   margin-top: 10px;
   color: white;
   transition: background-color 1s;
 }
 
-.to-do-list-item h4 {
+.list-item h4 {
   padding-left: 25px;
   padding-bottom: 5px;
 }
 
-.to-do-list-item:hover {
+.list-item:hover {
   background-color: #26a69a !important;
 }
 
-.complete-todo-item {
+.complete-item {
   float: right;
-  right: 20px;
+  right: 10px;
+  top: 15px;
 }
 
-#todo-add-form {
+#add-form {
   animation-duration: 1s;
   animation-name: slidein;
 }

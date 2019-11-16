@@ -3,11 +3,13 @@ import { connect } from "react-redux";
 import { deleteItem } from "../actions";
 import { editStockitem } from "../actions";
 import { addStockitem } from "../actions";
+import { Inputs } from "./Inputs"
 const Thetype = (props) => {
   return (
     <span>{props.type}</span>
   );
 };
+
 class StockItemsListItem extends Component {
   constructor () {
     super();
@@ -25,31 +27,32 @@ class StockItemsListItem extends Component {
      this.setState({isEditable:editItemId});
   };
   handleChange (evt) {
-    this.setState({ [evt.target.name]: evt.target.value });
+    //state won't update on null values
+    if(!evt.target.value){this.setState({ [evt.target.name]: "nullState" });}
+    else{this.setState({ [evt.target.name]: evt.target.value });}
     evt.preventDefault();
   };
 
   handleEditSave = editItemId => {
     const { editStockitem, auth } = this.props;
     this.setState({isEditable:""});
+
     let type = !this.state.type?this.props.stockItem.type:this.state.type;
     let subtype = !this.state.subtype?this.props.stockItem.subtype:this.state.subtype;
-    let price=!this.state.price?this.props.stockItem.price:this.state.price;
-    let material=!this.state.material?this.props.stockItem.material:this.state.material;
-    let submaterial=!this.state.submaterial?this.props.stockItem.submaterial:this.state.submaterial;
-    let description=!this.state.description?this.props.stockItem.description:this.state.description;
+    let price= !this.state.price?this.props.stockItem.price:this.state.price;
+    let material= !this.state.material?this.props.stockItem.material:this.state.material;
+    let submaterial= !this.state.submaterial?this.props.stockItem.submaterial:this.state.submaterial;
+    let description= !this.state.description?this.props.stockItem.description:this.state.description;
     let quantity= !this.state.quantity?this.props.stockItem.quantity:this.state.quantity;
-    let soldquantity= !this.state.soldquantity?this.props.stockItem.soldquantity:this.state.soldquantity;
     let isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive;  
-    editStockitem({ subtype: subtype,
-                    type: type, 
-                    price: price,
-                    material: material,
-                    submaterial: submaterial,
-                    description: description,
-                    quantity: quantity,
-                    soldquantity: soldquantity,
-                    isstocklive: isstocklive  
+    editStockitem({ subtype: subtype=="nullState"?"":subtype,
+                    type: type=="nullState"?"":type, 
+                    price: price=="nullState"?"":price,
+                    material: material=="nullState"?"":material,
+                    submaterial: submaterial=="nullState"?"":submaterial,
+                    description: description=="nullState"?"":description,
+                    quantity: quantity=="nullState"?"":quantity,
+                    isstocklive: isstocklive=="nullState"?"":isstocklive  
                   }, auth.uid, this.props.stockItemId);
  };
  handleCopy = editItemId => {
@@ -63,7 +66,6 @@ class StockItemsListItem extends Component {
               submaterial: this.props.stockItem.submaterial,
               description: this.props.stockItem.description,
               quantity: this.props.stockItem.quantity,
-              soldquantity: this.props.stockItem.soldquantity,
               isstocklive: this.props.stockItem.isstocklive  
             }, auth.uid)
  };
@@ -72,134 +74,78 @@ class StockItemsListItem extends Component {
     if(this.state.isEditable === stockItemId)
     {
       return(      
-      <div key="stockItemName" className="col s10 offset-s1 to-do-list-item purple">
+      <div key="stockItemName" className="col s10 offset-s1 list-item purple">
       <p>item id : {stockItemId}</p>
        
         <div id="add-form" className="col s10 offset-s1">
         <form onSubmit={this.handleEditSave}>
-          <div className="input-field">
-            <input name="type"
-            defaultValue={stockItem.type}
-              onChange={this.handleChange}
-              id="type"
-              type="text"
-            />
-            <label htmlFor="type">Type of item</label>
-            </div>
-  
-            <div className="input-field">
-            <input name="subtype"
-            defaultValue={stockItem.subtype}
-            onChange={this.handleChange}
-            id="subtype"
-            type="text"
-          />
-          <label htmlFor="subtype">SubType of item</label>
-          </div>
 
-          <div className="input-field">
-            <input name="material"
-            defaultValue={stockItem.material}
-            onChange={this.handleChange}
-            id="material"
-            type="text"
-          />
-          <label htmlFor="material">Material</label>
-          </div>
-
-          <div className="input-field">
-            <input name="submaterial"
-            defaultValue={stockItem.submaterial}
-            onChange={this.handleChange}
-            id="submaterial"
-            type="text"
-          />
-          <label htmlFor="submaterial">SubType of material</label>
-          </div>
-
-          <div className="input-field">
-            <input name="description"
-            defaultValue={stockItem.description}
-            onChange={this.handleChange}
-            id="description"
-            type="text"
-          />
-          <label htmlFor="description">Description</label>
-          </div>
-
-          <span className="input-field">Live?
-            <input name="isstocklive"
-            defaultValue={stockItem.isstocklive}
-            onChange={this.handleChange}
-            id="isstocklive"
-            type="number" max="1" min="0"
-          />
-          </span>
-
-          <span className="input-field">Quantity:
-            <input name="quantity"
-            defaultValue={stockItem.quantity}
-            onChange={this.handleChange}
-            id="quantity"
-            type="number" min="0"
-          />
-          </span>
-
-          <span className="input-field">Sold Quantity:
-            <input name="soldquantity"
-            defaultValue={stockItem.soldquantity}
-            onChange={this.handleChange}
-            id="soldquantity"
-            type="number"  min="0"
-          />
-          </span>
-
-          <span className="input-field">Price: £
-          <input name="price"
-          defaultValue={stockItem.price}
-          onChange={this.handleChange}
-          id="price"
-          type="number"
-          />
-          </span>
-         
+        <Inputs name={"type"} type={"text"} label={"Type of item"} 
+        onChange={this.handleChange} 
+        defaultValue={stockItem.type}
+        /> 
+        <Inputs name={"subtype"} type={"text"} label={"Subtype of item"} 
+        onChange={this.handleChange} 
+        defaultValue={stockItem.subtype}
+        /> 
+        <Inputs name={"material"} type={"text"} label={"Material"} 
+        onChange={this.handleChange} 
+        defaultValue={stockItem.material}
+        />
+        <Inputs name={"submaterial"} type={"text"} label={"Subtype of material"} 
+        onChange={this.handleChange} 
+        defaultValue={stockItem.submaterial}
+        />
+        <Inputs name={"description"} type={"text"} label={"Description"}
+        onChange={this.handleChange} 
+        defaultValue={stockItem.description}
+        />
+        <Inputs name={"isstocklive"} type={"number"} title={"Live?"} min={"0"} max={"1"}
+        onChange={this.handleChange} 
+        defaultValue={stockItem.isstocklive}
+        />
+        <Inputs name={"quantity"} type={"number"} title={"Quantity"} min={"0"}
+        onChange={this.handleChange} 
+        defaultValue={stockItem.quantity}
+        />
+        <Inputs name={"price"} type={"number"} title={"Price: £"} 
+        onChange={this.handleChange} 
+        defaultValue={stockItem.price}
+        />
         </form>
       </div>
         
-        <p>
-        <button type="submit"
-        className="complete-todo-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
+        <span
+        className="complete-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
         onClick={() => this.handleEditSave(stockItemId)} >
         <i className="large material-icons">save</i>
-        </button>
-        <button type="button"
-        className="complete-todo-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
+        </span>
+        <span
+        className="complete-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
         onClick={() => this.handleCopy(stockItemId)} >
         <i className="large material-icons">content_copy</i>
-        </button>
-        </p> 
+        </span>
       </div>
        );
     }
     else
     {
     return (
-      <div key="stockItemName" className="col s10 offset-s1 to-do-list-item teal">
-        <p>
-        <Thetype type={stockItem.type}/> - {stockItem.subtype}. made from: {stockItem.material} - {stockItem.submaterial}
-          <br/>{stockItem.description}
-          <span
-            className="complete-todo-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
-            onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(stockItemId) } } >
-            <i className="large material-icons">delete</i>
-          </span>
-          <span
-            className="complete-todo-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
-            onClick={() => this.handleEditClick(stockItemId)} >
-            <i className="large material-icons">edit</i>
-          </span>
-        </p>
-        <p>Price: {stockItem.price} | Quanity: {stockItem.quantity} | Amount Sold: {stockItem.soldquantity} | Is in shop: { stockItem.isstocklive == 1 ? 'Yes' : 'No' }</p>
+      <div key="stockItemName" className="col s10 offset-s1 list-item teal">
+      <span
+      className="complete-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
+      onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(stockItemId) } } >
+      <i className="large material-icons">delete</i>
+    </span>
+    <span
+      className="complete-item waves-effect waves-light teal lighten-5 teal-text text-darken-4 btn"
+      onClick={() => this.handleEditClick(stockItemId)} >
+      <i className="large material-icons">edit</i>
+    </span>
+          {stockItem.subtype} <Thetype type={stockItem.type}/> {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
+          <br/>Price: £{stockItem.price} | Quanity: {stockItem.quantity} | Is in shop: { stockItem.isstocklive == 1 ? 'Yes' : 'No' }
+          <br/>{stockItem.description? 'Description: ' : '' }{stockItem.description}
+          <br/>
       </div>
     );}
   }
