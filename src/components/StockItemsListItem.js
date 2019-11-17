@@ -138,7 +138,7 @@ class StockItemsListItem extends Component {
       <i className="large material-icons">edit</i>
     </span>
           {stockItem.subtype} {stockItem.type} {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
-          <br/>Price: £{stockItem.price} | Quanity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' }
+          <br/>Price: £{stockItem.price} | Quantity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' }
           <br/>{stockItem.description? 'Description: ' : '' }{stockItem.description}
           <br/>
       </div>
