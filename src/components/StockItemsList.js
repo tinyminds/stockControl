@@ -22,16 +22,32 @@ class StockItemsList extends Component {
     super();
     this.state = {
       ...initialState,
-      showLive:false
+      showLive:false,
+      showNotLive:false,
+      showQuantityZero: false
     };
+
     this.handleChange = this.handleChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleFilterLive = this.handleFilterLive.bind(this);
+    this.handleFilterNotLive = this.handleFilterNotLive.bind(this);
+    this.handdleQuantityZero = this.handleQuantityZero.bind(this);
   }
   handleFilterLive() {
-    this.setState({showLive : this.state.showLive?false:true})
+    this.setState({showLive : this.state.showLive?false:true});
+    this.setState({showNotLive : false});
+    this.setState({showQuantityZero : false});
   };
-
+  handleFilterNotLive() {
+    this.setState({showNotLive : this.state.showNotLive?false:true});
+    this.setState({showLive : false});
+    this.setState({showQuantityZero : false});
+  };
+  handleQuantityZero() {
+    this.setState({showQuantityZero : this.state.showQuantityZero?false:true});
+    this.setState({showLive : false});
+    this.setState({showNotLive : false});
+  };
   handleChange (evt) {
     this.setState({ [evt.target.name]: evt.target.value });
   };
@@ -113,7 +129,13 @@ class StockItemsList extends Component {
       if(this.state.showLive&&value.isstocklive==1){
       return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
       }
-      if(!this.state.showLive)
+      if(this.state.showNotLive&&value.isstocklive==0){
+        return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
+      }
+      if(this.state.showQuantityZero&&value.quantity==0){
+          return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
+      }
+      if(!this.state.showLive&&!this.state.showNotLive&&!this.state.showQuantityZero)
       {
         return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
       }  
@@ -140,7 +162,7 @@ class StockItemsList extends Component {
   }
 
   render() {
-    const { addFormVisible, showLive } = this.state;
+    const { addFormVisible, showLive, showNotLive, showQuantityZero } = this.state;
     if (this.props.data === "loading") {
       return (
         <div className="row center-align">
@@ -157,9 +179,20 @@ class StockItemsList extends Component {
           {this.renderStockItems()}
         </div>
         <div className="fixed-action-btn">
+      
+        <button
+        onClick={this.handdleQuantityZero}
+        className="teal txtBut"
+      >
+      {showQuantityZero ? (
+        <i>Show all</i>
+      ) : (
+        <i>Filter by Quantity Zero</i>
+      )}
+      </button>
          <button
             onClick={this.handleFilterLive}
-            className="teal darken-4"
+            className="teal txtBut"
           >
           {showLive ? (
             <i>Show all</i>
@@ -167,7 +200,16 @@ class StockItemsList extends Component {
             <i>Filter by Live</i>
           )}
           </button>
-
+          <button
+          onClick={this.handleFilterNotLive}
+          className="teal txtBut"
+        >
+        {showNotLive ? (
+          <i>Show all</i>
+        ) : (
+          <i>Filter by not Live</i>
+        )}
+        </button>
           <button
             onClick={this.props.signOut}
             id="sign-out-button"
