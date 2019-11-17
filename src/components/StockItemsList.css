@@ -10,7 +10,11 @@
  margin-right: 10px;
  margin-top: 10px;
 }
-
+.fixed-action-btn {
+    bottom: 0px !important;
+    padding-top: 0px !important;
+    margin-bottom: 0 !important;
+}
 input[type=number] {
   width: 80px !important;
   display:inline-block;

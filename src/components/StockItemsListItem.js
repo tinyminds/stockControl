@@ -39,7 +39,8 @@ class StockItemsListItem extends Component {
     let submaterial= !this.state.submaterial?this.props.stockItem.submaterial:this.state.submaterial;
     let description= !this.state.description?this.props.stockItem.description:this.state.description;
     let quantity= !this.state.quantity?this.props.stockItem.quantity:this.state.quantity;
-    let isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive;  
+    let isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive; 
+    let labelwritten=!this.state.labelwritten?this.props.stockItem.labelwritten:this.state.labelwritten; 
     editStockitem({ subtype: subtype==="nullState"?"":subtype,
                     type: type==="nullState"?"":type, 
                     price: price==="nullState"?"":price,
@@ -47,7 +48,8 @@ class StockItemsListItem extends Component {
                     submaterial: submaterial==="nullState"?"":submaterial,
                     description: description==="nullState"?"":description,
                     quantity: quantity==="nullState"?"":quantity,
-                    isstocklive: isstocklive==="nullState"?"":isstocklive  
+                    isstocklive: isstocklive==="nullState"?"":isstocklive,
+                    labelwritten: labelwritten==="nullState"?"":labelwritten
                   }, auth.uid, this.props.stockItemId);
  };
  handleCopy = editItemId => {
@@ -61,7 +63,8 @@ class StockItemsListItem extends Component {
               submaterial: this.props.stockItem.submaterial,
               description: this.props.stockItem.description,
               quantity: this.props.stockItem.quantity,
-              isstocklive: this.props.stockItem.isstocklive  
+              isstocklive: this.props.stockItem.isstocklive,
+              labelwritten: this.props.stockItem.labelwritten
             }, auth.uid)
  };
   render() {
@@ -107,6 +110,10 @@ class StockItemsListItem extends Component {
         onChange={this.handleChange} 
         defaultValue={stockItem.price}
         />
+        <Inputs name={"labelwritten"} type={"number"} title={"Labeled?"} min={"0"} max={"1"}
+        onChange={this.handleChange} 
+        defaultValue={stockItem.labelwritten}
+        />
         </form>
       </div>
         
@@ -138,7 +145,7 @@ class StockItemsListItem extends Component {
       <i className="large material-icons">edit</i>
     </span>
           {stockItem.subtype} {stockItem.type} {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
-          <br/>Price: £{stockItem.price} | Quantity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' }
+          <br/>Price: £{stockItem.price} | Quantity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' } | { stockItem.labelwritten == 1 ? 'Labeled' : 'Unlabeled' }
           <br/>{stockItem.description? 'Description: ' : '' }{stockItem.description}
           <br/>
       </div>
