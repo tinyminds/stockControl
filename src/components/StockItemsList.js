@@ -16,7 +16,8 @@ const initialState = {
   description: "",
   quantity: 1,
   isstocklive: 0,
-  labelwritten: 0
+  labelwritten: 0,
+  soldquantity: 0
 }
 class StockItemsList extends Component {
   constructor () {
@@ -29,48 +30,19 @@ class StockItemsList extends Component {
       showLabeled:false,
       showUnlabeled:false
     };
-
     this.handleChange = this.handleChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.handleFilterLive = this.handleFilterLive.bind(this);
-    this.handleFilterNotLive = this.handleFilterNotLive.bind(this);
-    this.handleFilterLabeled = this.handleFilterLabeled.bind(this);
-    this.handleFilterUnlabeled = this.handleFilterUnlabeled.bind(this);
-    this.handdleQuantityZero = this.handleQuantityZero.bind(this);
   }
-  handleFilterLive() {
-    this.setState({showLive : this.state.showLive?false:true});
+
+  handleFilter(type, val) {
     this.setState({showNotLive : false});
     this.setState({showQuantityZero : false});
     this.setState({showLabeled : false});
     this.setState({showUnlabeled : false});
-  };
-  handleFilterNotLive() {
-    this.setState({showNotLive : this.state.showNotLive?false:true});
     this.setState({showLive : false});
-    this.setState({showQuantityZero : false});
-    this.setState({showLabeled : false});
-    this.setState({showUnlabeled : false});
+    this.setState({[type] : val});
   };
-  handleFilterLabeled() {
-    this.setState({showLabeled : this.state.showLabeled?false:true});
-    this.setState({showNotLive : false});
-    this.setState({showQuantityZero : false});
-    this.setState({showUnlabeled : false});
-  };
-  handleFilterUnlabeled() {
-    this.setState({showUnlabeled : this.state.showUnlabeled?false:true});
-    this.setState({showLive : false});
-    this.setState({showQuantityZero : false});
-    this.setState({showLabeled : false});
-  };
-  handleQuantityZero() {
-    this.setState({showQuantityZero : this.state.showQuantityZero?false:true});
-    this.setState({showLive : false});
-    this.setState({showNotLive : false});
-    this.setState({showLabeled : false});
-    this.setState({showUnlabeled : false});
-  };
+
   handleChange (evt) {
     this.setState({ [evt.target.name]: evt.target.value });
   };
@@ -86,63 +58,56 @@ class StockItemsList extends Component {
                     description: this.state.description,
                     quantity: this.state.quantity,
                     isstocklive: this.state.isstocklive,
-                    labelwritten: this.state.labelwritten 
+                    labelwritten: this.state.labelwritten,
+                    soldquantity: this.state.soldquantity 
                   }, auth.uid);
     this.setState({ ...initialState, addFormVisible:true });
   };
 
   renderAddForm = () => {
-    const { 
-      addFormVisible,
-      subtype,
-      type,
-      price,
-      material,
-      submaterial,
-      description,
-      quantity,
-      isstocklive,
-      labelwritten
-    } = this.state;
-    if (addFormVisible) {
+    if (this.state.addFormVisible) {
       return (
         <div id="add-form" className="col s10 offset-s1">
           <form onSubmit={this.handleFormSubmit}>
           <Inputs name={"type"} type={"text"} label={"Type of item"} 
           onChange={this.handleChange} 
-          value={type}
+          value={this.state.type}
           /> 
           <Inputs name={"subtype"} type={"text"} label={"Subtype of item"} 
           onChange={this.handleChange} 
-          value={subtype}
+          value={this.state.subtype}
           /> 
           <Inputs name={"material"} type={"text"} label={"Material"} 
           onChange={this.handleChange} 
-          value={material}
+          value={this.state.material}
           />
           <Inputs name={"submaterial"} type={"text"} label={"Subtype of material"} 
           onChange={this.handleChange} 
-          value={submaterial}
+          value={this.state.submaterial}
           />
           <Inputs name={"description"} type={"text"} label={"Description"}
           onChange={this.handleChange} 
-          value={description}
+          value={this.state.description}
           />
           <Inputs name={"isstocklive"} type={"number"} title={"Live?"} min={"0"} max={"1"}
           onChange={this.handleChange} 
-          value={isstocklive}
+          value={this.state.isstocklive}
           />
           <Inputs name={"quantity"} type={"number"} title={"Quantity"} min={"0"}
           onChange={this.handleChange} 
-          value={quantity}
+          value={this.state.quantity}
+          />
+          <Inputs name={"soldquantity"} type={"number"} title={"Sold Quantity"} min={"0"}
+          onChange={this.handleChange} 
+          value={this.state.soldquantity}
           />
           <Inputs name={"price"} type={"number"} title={"Price: £"} min={"0"}
           onChange={this.handleChange} 
-          value={price}
+          value={this.state.price}
           />
           <Inputs name={"labelwritten"} type={"number"} title={"Labeled?"} min={"0"} max={"1"}
           onChange={this.handleChange} 
-          value={labelwritten}
+          value={this.state.labelwritten}
           />
             <br/>
             <button type="submit">Submit</button>
@@ -163,10 +128,10 @@ class StockItemsList extends Component {
       }
       if(this.state.showLabeled&&value.labelwritten==1){
         return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
-        }
-        if(this.state.showUnlabeled&&value.labelwritten==0){
+      }
+      if(this.state.showUnlabeled&&value.labelwritten==0){
           return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
-        }
+      }
       if(this.state.showQuantityZero&&value.quantity==0){
           return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
       }
@@ -175,8 +140,10 @@ class StockItemsList extends Component {
         return <StockItemsListItem key={key} stockItemId={key} stockItem={value}/>;
       }  
     });
+    
+    const totalItems = _.size(stockItems);
     if (!_.isEmpty(stockItems)) {
-      return stockItems;
+      return ( <div>{stockItems}<div className="col s10 offset-s1" itemscount={totalItems}>num of items: {totalItems}</div> </div>) ;
     }
     return (
       <div className="col s10 offset-s1 center-align">
@@ -210,79 +177,61 @@ class StockItemsList extends Component {
     return (
       <div className="list-container">
         <div className="row">
+        <br/>
+         
           {this.renderAddForm()}
           {this.renderStockItems()}
+         
         </div>
         <div className="fixed-action-btn">
       
         <button
-        onClick={this.handdleQuantityZero}
-        className="teal txtBut"
-      >
-      {showQuantityZero ? (
-        <i>Show all</i>
-      ) : (
-        <i>Filter by Quantity Zero</i>
-      )}
-      </button>
+        onClick={() => this.handleFilter("showQuantityZero", showQuantityZero?false:true)}
+        className="teal txtBut">
+          {showQuantityZero ? (<i>Show all</i>) : (<i>Filter by Quantity Zero</i>)}
+        </button>
+
          <button
-            onClick={this.handleFilterLive}
-            className="teal txtBut"
-          >
-          {showLive ? (
-            <i>Show all</i>
-          ) : (
-            <i>Filter by Live</i>
-          )}
-          </button>
-          <button
-          onClick={this.handleFilterNotLive}
-          className="teal txtBut"
-        >
-        {showNotLive ? (
-          <i>Show all</i>
-        ) : (
-          <i>Filter by not Live</i>
-        )}
+         onClick={() => this.handleFilter("showLive", showLive?false:true)}
+         className="teal txtBut">
+          {showLive ? (<i>Show all</i>) : (<i>Filter by Live</i>)}
+         </button>
+         
+         <button
+          onClick={() => this.handleFilter("showNotLive", showNotLive?false:true)}
+          className="teal txtBut">
+        {showNotLive ? (<i>Show all</i>) : (<i>Filter by not Live</i>)}
         </button>
+
         <button
-            onClick={this.handleFilterLabeled}
-            className="teal txtBut"
-          >
-          {showLabeled ? (
-            <i>Show all</i>
-          ) : (
-            <i>Filter by Labeled</i>
-          )}
+            onClick={() => this.handleFilter("showLabeled", showLabeled?false:true)}
+            className="teal txtBut" >
+          {showLabeled ? (<i>Show all</i>) : (<i>Filter by Labeled</i>)}
           </button>
+
           <button
-          onClick={this.handleFilterUnlabeled}
-          className="teal txtBut"
-        >
-        {showUnlabeled ? (
-          <i>Show all</i>
-        ) : (
-          <i>Filter by UnLabeled</i>
-        )}
+          onClick={() => this.handleFilter("showUnlabeled", showUnlabeled?false:true)}
+          className="teal txtBut">
+        {showUnlabeled ? (<i>Show all</i>) : (<i>Filter by UnLabeled</i>)}
         </button>
+
           <button
             onClick={this.props.signOut}
             id="sign-out-button"
-            className="btn-floating btn-large teal darken-4"
-          >
+            className="btn-floating btn-large teal darken-4">
             <i className="large material-icons">exit_to_app</i>
           </button>
       
           <button
             onClick={() => this.setState({ addFormVisible: !addFormVisible })}
-            className="btn-floating btn-large teal darken-4"
-          >
+            className="btn-floating btn-large teal darken-4">
             {addFormVisible ? (
               <i className="large material-icons">close</i>
             ) : (
               <i className="large material-icons">add</i>
             )}
           </button>
+          
         </div>
       </div>
     );

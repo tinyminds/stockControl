@@ -13,6 +13,7 @@ class StockItemsListItem extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
   }
+
   handleDeleteClick = deleteItemId => {
     const { deleteItem, auth } = this.props;
     deleteItem(deleteItemId, auth.uid);
@@ -21,8 +22,9 @@ class StockItemsListItem extends Component {
   handleEditClick = editItemId => {
      this.setState({isEditable:editItemId});
   };
+
   handleChange (evt) {
-    //state won't update on null values
+    //state won't update on null values so fake
     if(!evt.target.value){this.setState({ [evt.target.name]: "nullState" });}
     else{this.setState({ [evt.target.name]: evt.target.value });}
     evt.preventDefault();
@@ -32,15 +34,17 @@ class StockItemsListItem extends Component {
     const { editStockitem, auth } = this.props;
     this.setState({isEditable:""});
 
-    let type = !this.state.type?this.props.stockItem.type:this.state.type;
-    let subtype = !this.state.subtype?this.props.stockItem.subtype:this.state.subtype;
-    let price= !this.state.price?this.props.stockItem.price:this.state.price;
-    let material= !this.state.material?this.props.stockItem.material:this.state.material;
-    let submaterial= !this.state.submaterial?this.props.stockItem.submaterial:this.state.submaterial;
-    let description= !this.state.description?this.props.stockItem.description:this.state.description;
-    let quantity= !this.state.quantity?this.props.stockItem.quantity:this.state.quantity;
-    let isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive; 
-    let labelwritten=!this.state.labelwritten?this.props.stockItem.labelwritten:this.state.labelwritten; 
+    let type = !this.state.type?this.props.stockItem.type:this.state.type,
+    subtype = !this.state.subtype?this.props.stockItem.subtype:this.state.subtype,
+    price= !this.state.price?this.props.stockItem.price:this.state.price,
+    material= !this.state.material?this.props.stockItem.material:this.state.material,
+    submaterial= !this.state.submaterial?this.props.stockItem.submaterial:this.state.submaterial,
+    description= !this.state.description?this.props.stockItem.description:this.state.description,
+    quantity= !this.state.quantity?this.props.stockItem.quantity:this.state.quantity,
+    isstocklive= !this.state.isstocklive?this.props.stockItem.isstocklive:this.state.isstocklive, 
+    labelwritten=!this.state.labelwritten?this.props.stockItem.labelwritten:this.state.labelwritten, 
+    soldquantity=!this.state.soldquantity?this.props.stockItem.soldquantity:this.state.soldquantity;
+
     editStockitem({ subtype: subtype==="nullState"?"":subtype,
                     type: type==="nullState"?"":type, 
                     price: price==="nullState"?"":price,
@@ -49,12 +53,13 @@ class StockItemsListItem extends Component {
                     description: description==="nullState"?"":description,
                     quantity: quantity==="nullState"?"":quantity,
                     isstocklive: isstocklive==="nullState"?"":isstocklive,
-                    labelwritten: labelwritten==="nullState"?"":labelwritten
+                    labelwritten: labelwritten==="nullState"?"":labelwritten,
+                    soldquantity: soldquantity==="nullState"?"":soldquantity
                   }, auth.uid, this.props.stockItemId);
  };
  handleCopy = editItemId => {
-  const { addStockitem, auth } = this.props;
-  this.setState({isEditable:""});
+ const { addStockitem, auth } = this.props;
+ this.setState({isEditable:""});
  addStockitem({
               subtype: this.props.stockItem.subtype,
               type: this.props.stockItem.type, 
@@ -64,11 +69,14 @@ class StockItemsListItem extends Component {
               description: this.props.stockItem.description,
               quantity: this.props.stockItem.quantity,
               isstocklive: this.props.stockItem.isstocklive,
-              labelwritten: this.props.stockItem.labelwritten
+              labelwritten: this.props.stockItem.labelwritten,
+              soldquantity: this.props.stockItem.soldquantity
             }, auth.uid)
  };
   render() {
     const { stockItemId, stockItem } = this.props;
+    totalVal = totalVal + (stockItem.price * stockItem.quantity);
+    totalSoldVal = totalSoldVal + (stockItem.price * stockItem.soldquantity);
     if(this.state.isEditable === stockItemId)
     {
       return(      
@@ -105,6 +113,10 @@ class StockItemsListItem extends Component {
         <Inputs name={"quantity"} type={"number"} title={"Quantity"} min={"0"}
         onChange={this.handleChange} 
         defaultValue={stockItem.quantity}
+        />
+        <Inputs name={"soldquantity"} type={"number"} title={"Sold Quantity"} min={"0"}
+        onChange={this.handleChange} 
+        defaultValue={stockItem.soldquantity}
         />
         <Inputs name={"price"} type={"number"} title={"Price: £"} 
         onChange={this.handleChange} 
@@ -145,13 +157,16 @@ class StockItemsListItem extends Component {
       <i className="large material-icons">edit</i>
     </span>
           {stockItem.subtype} {stockItem.type} {stockItem.material? "made from ":""}{stockItem.material}{stockItem.submaterial? ": ":""}{stockItem.submaterial}
-          <br/>Price: £{stockItem.price} | Quantity: {stockItem.quantity} | { stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' } | { stockItem.labelwritten == 1 ? 'Labeled' : 'Unlabeled' }
+          <br/>Price: £{stockItem.price} | Quantity: {stockItem.quantity} | Sold Quantity: {stockItem.soldquantity} |{ stockItem.isstocklive === 1 ? 'In shop' : 'Not in shop' } | { stockItem.labelwritten == 1 ? 'Labeled' : 'Unlabeled' }
           <br/>{stockItem.description? 'Description: ' : '' }{stockItem.description}
-          <br/>
+          <br/>Total Value: £{(stockItem.price * stockItem.quantity)} | Total Sold Value: £{(stockItem.price * stockItem.soldquantity)}
       </div>
     );}
   }
 };
+
+let totalVal = 0;
+let totalSoldVal = 0;
 
 const mapStateToProps = ({ auth }) => {
   return {
